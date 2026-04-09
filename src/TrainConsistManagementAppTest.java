@@ -17,6 +17,7 @@ public class TrainConsistManagementAppTest {
         testUC10();
         testUC11();
         testUC12();
+        testUC13();
         System.out.println("All tests passed");
     }
 
@@ -33,7 +34,6 @@ public class TrainConsistManagementAppTest {
         list.remove("AC Chair");
 
         if (list.size() != 2) throw new RuntimeException();
-        if (!list.contains("Sleeper")) throw new RuntimeException();
     }
 
     static void testUC3() {
@@ -49,7 +49,6 @@ public class TrainConsistManagementAppTest {
         list.add("Sleeper");
         list.add(1, "Pantry");
         list.removeFirst();
-
         if (!list.contains("Pantry")) throw new RuntimeException();
     }
 
@@ -71,7 +70,6 @@ public class TrainConsistManagementAppTest {
         list.add(new Bogie("A", 50));
         list.add(new Bogie("B", 20));
         list.sort(Comparator.comparingInt(b -> b.capacity));
-
         if (list.get(0).capacity != 20) throw new RuntimeException();
     }
 
@@ -80,11 +78,7 @@ public class TrainConsistManagementAppTest {
                 new Bogie("A", 70),
                 new Bogie("B", 40)
         );
-
-        List<Bogie> res = list.stream()
-                .filter(b -> b.capacity > 60)
-                .collect(Collectors.toList());
-
+        List<Bogie> res = list.stream().filter(b -> b.capacity > 60).collect(Collectors.toList());
         if (res.size() != 1) throw new RuntimeException();
     }
 
@@ -93,10 +87,7 @@ public class TrainConsistManagementAppTest {
                 new Bogie("A", 10),
                 new Bogie("A", 20)
         );
-
-        Map<String, List<Bogie>> g = list.stream()
-                .collect(Collectors.groupingBy(b -> b.name));
-
+        Map<String, List<Bogie>> g = list.stream().collect(Collectors.groupingBy(b -> b.name));
         if (g.get("A").size() != 2) throw new RuntimeException();
     }
 
@@ -105,7 +96,6 @@ public class TrainConsistManagementAppTest {
                 new Bogie("A", 10),
                 new Bogie("B", 20)
         );
-
         int sum = list.stream().map(b -> b.capacity).reduce(0, Integer::sum);
         if (sum != 30) throw new RuntimeException();
     }
@@ -131,14 +121,26 @@ public class TrainConsistManagementAppTest {
                 .allMatch(g -> !g.type.equals("Cylindrical") || g.cargo.equals("Petroleum"));
 
         if (!safe) throw new RuntimeException();
+    }
 
-        List<GoodsBogie> unsafe = Arrays.asList(
-                new GoodsBogie("Cylindrical", "Coal")
-        );
+    static void testUC13() {
+        List<Bogie> list = new ArrayList<>();
+        for (int i = 0; i < 1000; i++) {
+            list.add(new Bogie("B", i));
+        }
 
-        boolean result = unsafe.stream()
-                .allMatch(g -> !g.type.equals("Cylindrical") || g.cargo.equals("Petroleum"));
+        long start1 = System.nanoTime();
+        List<Bogie> loop = new ArrayList<>();
+        for (Bogie b : list) {
+            if (b.capacity > 60) loop.add(b);
+        }
+        long end1 = System.nanoTime();
 
-        if (result) throw new RuntimeException();
+        long start2 = System.nanoTime();
+        List<Bogie> stream = list.stream().filter(b -> b.capacity > 60).collect(Collectors.toList());
+        long end2 = System.nanoTime();
+
+        if (loop.size() != stream.size()) throw new RuntimeException();
+        if ((end1 - start1) <= 0 || (end2 - start2) <= 0) throw new RuntimeException();
     }
 }

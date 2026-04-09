@@ -69,28 +69,21 @@ public class TrainConsistManagementApp {
         bogieCapacity.put("General", 90);
 
         List<Bogie> bogies = new ArrayList<>();
-        bogies.add(new Bogie("Sleeper", 72));
-        bogies.add(new Bogie("AC Chair", 56));
-        bogies.add(new Bogie("First Class", 24));
-        bogies.add(new Bogie("General", 90));
+        for (int i = 0; i < 10000; i++) {
+            bogies.add(new Bogie("B" + i, i % 100));
+        }
 
-        bogies.sort(Comparator.comparingInt(b -> b.capacity));
+        List<Bogie> sorted = new ArrayList<>(bogies);
+        sorted.sort(Comparator.comparingInt(b -> b.capacity));
 
-        List<Bogie> filtered = bogies.stream()
+        List<Bogie> filtered = sorted.stream()
                 .filter(b -> b.capacity > 60)
                 .collect(Collectors.toList());
 
-        List<Bogie> bogiesForGrouping = new ArrayList<>();
-        bogiesForGrouping.add(new Bogie("Sleeper", 72));
-        bogiesForGrouping.add(new Bogie("AC Chair", 56));
-        bogiesForGrouping.add(new Bogie("First Class", 24));
-        bogiesForGrouping.add(new Bogie("Sleeper", 70));
-        bogiesForGrouping.add(new Bogie("AC Chair", 60));
-
-        Map<String, List<Bogie>> grouped = bogiesForGrouping.stream()
+        Map<String, List<Bogie>> grouped = sorted.stream()
                 .collect(Collectors.groupingBy(b -> b.name));
 
-        int totalSeats = bogies.stream()
+        int totalSeats = sorted.stream()
                 .map(b -> b.capacity)
                 .reduce(0, Integer::sum);
 
@@ -114,44 +107,36 @@ public class TrainConsistManagementApp {
         boolean isSafe = goods.stream()
                 .allMatch(g -> !g.type.equals("Cylindrical") || g.cargo.equals("Petroleum"));
 
+        long startLoop = System.nanoTime();
+        List<Bogie> loopFiltered = new ArrayList<>();
+        for (Bogie b : bogies) {
+            if (b.capacity > 60) {
+                loopFiltered.add(b);
+            }
+        }
+        long endLoop = System.nanoTime();
+
+        long startStream = System.nanoTime();
+        List<Bogie> streamFiltered = bogies.stream()
+                .filter(b -> b.capacity > 60)
+                .collect(Collectors.toList());
+        long endStream = System.nanoTime();
+
         System.out.println("\nFinal Train Report:\n");
 
-        System.out.println("Initial Train Consist Size: " + trainConsist.size());
         System.out.println("Passenger Bogies: " + passengerBogies);
         System.out.println("Contains Sleeper: " + hasSleeper);
         System.out.println("Unique Bogie IDs: " + bogieIds);
         System.out.println("Ordered Consist: " + orderedConsist);
         System.out.println("Formation: " + formation);
 
-        System.out.println("\nCapacity Map:");
-        for (Map.Entry<String, Integer> e : bogieCapacity.entrySet()) {
-            System.out.println(e.getKey() + " -> " + e.getValue());
-        }
-
-        System.out.println("\nSorted Bogies:");
-        for (Bogie b : bogies) {
-            System.out.println(b.name + " -> " + b.capacity);
-        }
-
-        System.out.println("\nFiltered Bogies (>60):");
-        for (Bogie b : filtered) {
-            System.out.println(b.name + " -> " + b.capacity);
-        }
-
-        System.out.println("\nGrouped Bogies:");
-        for (Map.Entry<String, List<Bogie>> entry : grouped.entrySet()) {
-            System.out.print(entry.getKey() + ": ");
-            List<String> caps = entry.getValue().stream()
-                    .map(b -> String.valueOf(b.capacity))
-                    .collect(Collectors.toList());
-            System.out.println(caps);
-        }
-
         System.out.println("\nTotal Seating Capacity: " + totalSeats);
 
         System.out.println("\nTrain ID Valid: " + validTrain);
         System.out.println("Cargo Code Valid: " + validCargo);
+        System.out.println("Safety Compliance: " + isSafe);
 
-        System.out.println("\nSafety Compliance: " + isSafe);
+        System.out.println("\nLoop Filtering Time: " + (endLoop - startLoop));
+        System.out.println("Stream Filtering Time: " + (endStream - startStream));
     }
 }
