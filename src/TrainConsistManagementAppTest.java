@@ -16,6 +16,7 @@ public class TrainConsistManagementAppTest {
         testUC9();
         testUC10();
         testUC11();
+        testUC12();
         System.out.println("All tests passed");
     }
 
@@ -118,5 +119,26 @@ public class TrainConsistManagementAppTest {
 
         if (!cargo.matcher("PET-AB").matches()) throw new RuntimeException();
         if (cargo.matcher("PET-ab").matches()) throw new RuntimeException();
+    }
+
+    static void testUC12() {
+        List<GoodsBogie> goods = Arrays.asList(
+                new GoodsBogie("Cylindrical", "Petroleum"),
+                new GoodsBogie("Box", "Coal")
+        );
+
+        boolean safe = goods.stream()
+                .allMatch(g -> !g.type.equals("Cylindrical") || g.cargo.equals("Petroleum"));
+
+        if (!safe) throw new RuntimeException();
+
+        List<GoodsBogie> unsafe = Arrays.asList(
+                new GoodsBogie("Cylindrical", "Coal")
+        );
+
+        boolean result = unsafe.stream()
+                .allMatch(g -> !g.type.equals("Cylindrical") || g.cargo.equals("Petroleum"));
+
+        if (result) throw new RuntimeException();
     }
 }

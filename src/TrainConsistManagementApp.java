@@ -12,6 +12,16 @@ class Bogie {
     }
 }
 
+class GoodsBogie {
+    String type;
+    String cargo;
+
+    GoodsBogie(String type, String cargo) {
+        this.type = type;
+        this.cargo = cargo;
+    }
+}
+
 public class TrainConsistManagementApp {
 
     public static void main(String[] args) {
@@ -96,6 +106,14 @@ public class TrainConsistManagementApp {
         boolean validTrain = trainPattern.matcher(trainId).matches();
         boolean validCargo = cargoPattern.matcher(cargoCode).matches();
 
+        List<GoodsBogie> goods = new ArrayList<>();
+        goods.add(new GoodsBogie("Cylindrical", "Petroleum"));
+        goods.add(new GoodsBogie("Box", "Coal"));
+        goods.add(new GoodsBogie("Open", "Grain"));
+
+        boolean isSafe = goods.stream()
+                .allMatch(g -> !g.type.equals("Cylindrical") || g.cargo.equals("Petroleum"));
+
         System.out.println("\nFinal Train Report:\n");
 
         System.out.println("Initial Train Consist Size: " + trainConsist.size());
@@ -133,5 +151,7 @@ public class TrainConsistManagementApp {
 
         System.out.println("\nTrain ID Valid: " + validTrain);
         System.out.println("Cargo Code Valid: " + validCargo);
+
+        System.out.println("\nSafety Compliance: " + isSafe);
     }
 }
