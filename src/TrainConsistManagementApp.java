@@ -8,6 +8,12 @@ class InvalidCapacityException extends Exception {
     }
 }
 
+class CargoSafetyException extends RuntimeException {
+    CargoSafetyException(String message) {
+        super(message);
+    }
+}
+
 class Bogie {
     String name;
     int capacity;
@@ -28,6 +34,20 @@ class GoodsBogie {
     GoodsBogie(String type, String cargo) {
         this.type = type;
         this.cargo = cargo;
+    }
+
+    void assignCargo(String cargo) {
+        try {
+            if (type.equals("Rectangular") && cargo.equals("Petroleum")) {
+                throw new CargoSafetyException("Unsafe cargo assignment");
+            }
+            this.cargo = cargo;
+            System.out.println("Cargo assigned: " + cargo + " to " + type);
+        } catch (CargoSafetyException e) {
+            System.out.println("Error: " + e.getMessage());
+        } finally {
+            System.out.println("Cargo assignment attempted for " + type);
+        }
     }
 }
 
@@ -110,7 +130,7 @@ public class TrainConsistManagementApp {
 
         List<GoodsBogie> goods = new ArrayList<>();
         goods.add(new GoodsBogie("Cylindrical", "Petroleum"));
-        goods.add(new GoodsBogie("Box", "Coal"));
+        goods.add(new GoodsBogie("Rectangular", "Coal"));
         goods.add(new GoodsBogie("Open", "Grain"));
 
         boolean isSafe = goods.stream()
@@ -138,6 +158,12 @@ public class TrainConsistManagementApp {
                 .filter(b -> b.capacity > 60)
                 .collect(Collectors.toList());
         long endStream = System.nanoTime();
+
+        GoodsBogie g1 = new GoodsBogie("Cylindrical", "");
+        GoodsBogie g2 = new GoodsBogie("Rectangular", "");
+
+        g1.assignCargo("Petroleum");
+        g2.assignCargo("Petroleum");
 
         System.out.println("\nFinal Train Report\n");
 

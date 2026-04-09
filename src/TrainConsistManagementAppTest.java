@@ -19,6 +19,7 @@ public class TrainConsistManagementAppTest {
         testUC12();
         testUC13();
         testUC14();
+        testUC15();
         System.out.println("All tests passed");
     }
 
@@ -212,5 +213,22 @@ public class TrainConsistManagementAppTest {
         } catch (Exception e) {
             throw new RuntimeException();
         }
+    }
+
+    static void testUC15() {
+
+        GoodsBogie safe = new GoodsBogie("Cylindrical", "");
+        safe.assignCargo("Petroleum");
+
+        GoodsBogie unsafe = new GoodsBogie("Rectangular", "");
+        unsafe.assignCargo("Petroleum");
+
+        if (!safe.cargo.equals("Petroleum")) throw new RuntimeException();
+        if (unsafe.cargo.equals("Petroleum")) throw new RuntimeException();
+
+        GoodsBogie g = new GoodsBogie("Rectangular", "");
+        g.assignCargo("Coal");
+
+        if (!g.cargo.equals("Coal")) throw new RuntimeException();
     }
 }
