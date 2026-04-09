@@ -79,6 +79,10 @@ public class TrainConsistManagementApp {
         Map<String, List<Bogie>> grouped = bogiesForGrouping.stream()
                 .collect(Collectors.groupingBy(b -> b.name));
 
+        int totalSeats = bogies.stream()
+                .map(b -> b.capacity)
+                .reduce(0, Integer::sum);
+
         System.out.println("Enter number of additional passenger bogies:");
         int n = sc.nextInt();
         sc.nextLine();
@@ -90,15 +94,11 @@ public class TrainConsistManagementApp {
         System.out.println("\nFinal Train Report:\n");
 
         System.out.println("Initial Train Consist Size: " + trainConsist.size());
-
         System.out.println("Passenger Bogies: " + passengerBogies);
         System.out.println("Contains Sleeper: " + hasSleeper);
-
         System.out.println("Unique Bogie IDs: " + bogieIds);
-
         System.out.println("Ordered Consist: " + orderedConsist);
-
-        System.out.println("Formation (Ordered + Unique): " + formation);
+        System.out.println("Formation: " + formation);
 
         System.out.println("\nCapacity Map:");
         for (Map.Entry<String, Integer> e : bogieCapacity.entrySet()) {
@@ -123,5 +123,7 @@ public class TrainConsistManagementApp {
                     .collect(Collectors.toList());
             System.out.println(caps);
         }
+
+        System.out.println("\nTotal Seating Capacity: " + totalSeats);
     }
 }

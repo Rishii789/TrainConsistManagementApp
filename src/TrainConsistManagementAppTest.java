@@ -4,24 +4,25 @@ import java.util.stream.Collectors;
 public class TrainConsistManagementAppTest {
 
     public static void main(String[] args) {
-        testUC1Initialization();
-        testUC2Operations();
-        testUC3HashSetUniqueness();
-        testUC4LinkedListOperations();
-        testUC5LinkedHashSetOrderAndUniqueness();
-        testUC6HashMapMapping();
-        testUC7SortingComparator();
-        testUC8FilteringStreams();
-        testUC9GroupingStreams();
+        testUC1();
+        testUC2();
+        testUC3();
+        testUC4();
+        testUC5();
+        testUC6();
+        testUC7();
+        testUC8();
+        testUC9();
+        testUC10();
         System.out.println("All tests passed");
     }
 
-    static void testUC1Initialization() {
+    static void testUC1() {
         List<String> trainConsist = new ArrayList<>();
-        if (trainConsist.size() != 0) throw new RuntimeException();
+        if (!trainConsist.isEmpty()) throw new RuntimeException();
     }
 
-    static void testUC2Operations() {
+    static void testUC2() {
         List<String> passengerBogies = new ArrayList<>();
         passengerBogies.add("Sleeper");
         passengerBogies.add("AC Chair");
@@ -34,7 +35,7 @@ public class TrainConsistManagementAppTest {
         if (passengerBogies.contains("AC Chair")) throw new RuntimeException();
     }
 
-    static void testUC3HashSetUniqueness() {
+    static void testUC3() {
         Set<String> bogieIds = new HashSet<>();
         bogieIds.add("BG104");
         bogieIds.add("BG103");
@@ -45,7 +46,7 @@ public class TrainConsistManagementAppTest {
         if (bogieIds.size() != 4) throw new RuntimeException();
     }
 
-    static void testUC4LinkedListOperations() {
+    static void testUC4() {
         LinkedList<String> list = new LinkedList<>();
         list.add("Engine");
         list.add("Sleeper");
@@ -61,7 +62,7 @@ public class TrainConsistManagementAppTest {
         if (!list.equals(expected)) throw new RuntimeException();
     }
 
-    static void testUC5LinkedHashSetOrderAndUniqueness() {
+    static void testUC5() {
         LinkedHashSet<String> set = new LinkedHashSet<>();
         set.add("Engine");
         set.add("Sleeper");
@@ -73,7 +74,7 @@ public class TrainConsistManagementAppTest {
         if (!new ArrayList<>(set).equals(expected)) throw new RuntimeException();
     }
 
-    static void testUC6HashMapMapping() {
+    static void testUC6() {
         Map<String, Integer> map = new HashMap<>();
         map.put("Sleeper", 72);
         map.put("AC Chair", 56);
@@ -86,7 +87,7 @@ public class TrainConsistManagementAppTest {
         if (!map.get("General").equals(90)) throw new RuntimeException();
     }
 
-    static void testUC7SortingComparator() {
+    static void testUC7() {
         List<Bogie> list = new ArrayList<>();
         list.add(new Bogie("Sleeper", 72));
         list.add(new Bogie("AC Chair", 56));
@@ -95,13 +96,13 @@ public class TrainConsistManagementAppTest {
 
         list.sort(Comparator.comparingInt(b -> b.capacity));
 
-        if (list.get(0).capacity != 24) throw new RuntimeException();
-        if (list.get(1).capacity != 56) throw new RuntimeException();
-        if (list.get(2).capacity != 72) throw new RuntimeException();
-        if (list.get(3).capacity != 90) throw new RuntimeException();
+        int[] expected = {24, 56, 72, 90};
+        for (int i = 0; i < expected.length; i++) {
+            if (list.get(i).capacity != expected[i]) throw new RuntimeException();
+        }
     }
 
-    static void testUC8FilteringStreams() {
+    static void testUC8() {
         List<Bogie> list = new ArrayList<>();
         list.add(new Bogie("Sleeper", 72));
         list.add(new Bogie("AC Chair", 56));
@@ -113,9 +114,16 @@ public class TrainConsistManagementAppTest {
                 .collect(Collectors.toList());
 
         if (filtered.size() != 2) throw new RuntimeException();
+
+        Set<String> names = new HashSet<>();
+        for (Bogie b : filtered) {
+            names.add(b.name);
+        }
+
+        if (!names.contains("Sleeper") || !names.contains("General")) throw new RuntimeException();
     }
 
-    static void testUC9GroupingStreams() {
+    static void testUC9() {
         List<Bogie> list = new ArrayList<>();
         list.add(new Bogie("Sleeper", 72));
         list.add(new Bogie("AC Chair", 56));
@@ -130,5 +138,26 @@ public class TrainConsistManagementAppTest {
         if (grouped.get("Sleeper").size() != 2) throw new RuntimeException();
         if (grouped.get("AC Chair").size() != 2) throw new RuntimeException();
         if (grouped.get("First Class").size() != 1) throw new RuntimeException();
+    }
+
+    static void testUC10() {
+        List<Bogie> list = Arrays.asList(
+                new Bogie("Sleeper", 72),
+                new Bogie("AC Chair", 56),
+                new Bogie("First Class", 24)
+        );
+
+        int total = list.stream()
+                .map(b -> b.capacity)
+                .reduce(0, Integer::sum);
+
+        if (total != 152) throw new RuntimeException();
+
+        List<Bogie> empty = new ArrayList<>();
+        int totalEmpty = empty.stream()
+                .map(b -> b.capacity)
+                .reduce(0, Integer::sum);
+
+        if (totalEmpty != 0) throw new RuntimeException();
     }
 }
