@@ -1,4 +1,5 @@
 import java.util.*;
+import java.util.regex.*;
 import java.util.stream.Collectors;
 
 class Bogie {
@@ -83,13 +84,17 @@ public class TrainConsistManagementApp {
                 .map(b -> b.capacity)
                 .reduce(0, Integer::sum);
 
-        System.out.println("Enter number of additional passenger bogies:");
-        int n = sc.nextInt();
-        sc.nextLine();
+        System.out.println("Enter Train ID:");
+        String trainId = sc.nextLine();
 
-        for (int i = 0; i < n; i++) {
-            passengerBogies.add(sc.nextLine());
-        }
+        System.out.println("Enter Cargo Code:");
+        String cargoCode = sc.nextLine();
+
+        Pattern trainPattern = Pattern.compile("TRN-\\d{4}");
+        Pattern cargoPattern = Pattern.compile("PET-[A-Z]{2}");
+
+        boolean validTrain = trainPattern.matcher(trainId).matches();
+        boolean validCargo = cargoPattern.matcher(cargoCode).matches();
 
         System.out.println("\nFinal Train Report:\n");
 
@@ -125,5 +130,8 @@ public class TrainConsistManagementApp {
         }
 
         System.out.println("\nTotal Seating Capacity: " + totalSeats);
+
+        System.out.println("\nTrain ID Valid: " + validTrain);
+        System.out.println("Cargo Code Valid: " + validCargo);
     }
 }
